@@ -14,3 +14,6 @@ The above screenshot shows a typical Weather API response.
 ![Screenshot 2021-07-27 at 11 33 06 PM](https://user-images.githubusercontent.com/47850206/127204990-7d12d7ff-bcea-4f35-8d4f-0314c15aba2f.png)
 
 The above screenshot shows the Structs created by the script using the API response
+
+
+You can just copy/paste this into a swift file. Do check the legitimacy once before using! 
