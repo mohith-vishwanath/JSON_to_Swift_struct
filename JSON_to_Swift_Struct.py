@@ -5,10 +5,12 @@ from pprint import pprint
 # PYTHON SCRIPT TO CONVERT JSON FORMAT TO SWIFT STRUCT
 
 
-url = "https://api.openweathermap.org/data/2.5/weather?lat=28.448560415519535&lon=77.51167803006174&appid=65566541869f384610f77957287978c2"
+url = "https://gorest.co.in/public/v1/users"
 response = requests.get(url).json() # Comment this line if you are reading from a file
 
-# response = json.load(open("response.json", "r")) # Comment this line if you are fetching from an API
+# pprint(response)
+
+# response = json.load(open("/Users/mohith/Downloads/response.json", "r")) # Comment this line if you are fetching from an API
 
 main_class_name = "Weather"
 
@@ -21,10 +23,12 @@ swift_types = {
     type(8): "Int",
     type([1]): "List",
     type({}): "Dict",
-    type(True) : "bool"
+    type(True) : "bool",
+    type(None) : "None"
 }
 
 base_value_types = ["Int","Float","String"]
+previous_struct_names = []
 
 
 def create_struct(json_file,class_string=main_string):
@@ -38,12 +42,14 @@ def create_struct(json_file,class_string=main_string):
             new_class_string = ["struct " + key + "Class : Codable {"]
             extra_classes.append(create_struct(value,new_class_string))
             class_string.append("let " + key + " : " + key + "Class")
-        else:
+        elif value_type == "List":
             for item in value:
                 if type(item) == dict:
-                    class_string.append("let " + key + " : [" + key + "Class]")
-                    new_class_string = ["struct " + key + "Class : Codable {"]
-                    extra_classes.append(create_struct(item,new_class_string))
+                    if key+"Class" not in previous_struct_names:
+                        class_string.append("let " + key + " : [" + key + "Class]")
+                        new_class_string = ["struct " + key + "Class : Codable {"]
+                        extra_classes.append(create_struct(item,new_class_string))
+                        previous_struct_names.append(key+"Class")
                 else:
                     class_string.append("let " + key + " : [" + swift_types[type(item)] + "]")
                     break
@@ -52,6 +58,8 @@ def create_struct(json_file,class_string=main_string):
             class_string.append("}")
 
     return class_string
+
+# pprint(response)
 
 print("\n")
 print("\n".join(create_struct(response)))
